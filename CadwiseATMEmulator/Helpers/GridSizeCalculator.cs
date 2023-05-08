@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace CadwiseATMEmulator.Helpers
 {
+    /// <summary>
+    /// Класс вычисления сторон прямоугольника для размещения N объектов в сетке
+    /// </summary>
     internal class GridSizeCalculator
     {
         public static (int, int) GetGridSize(int countOfCells)

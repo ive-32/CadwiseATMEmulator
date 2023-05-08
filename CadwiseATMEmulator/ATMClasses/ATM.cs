@@ -5,6 +5,9 @@ using System.Linq;
 
 namespace CadwiseATMEmulator
 {
+    /// <summary>
+    /// Класс банкомата
+    /// </summary>
     public class ATM
     {
         public delegate void AtmTanksChanged();

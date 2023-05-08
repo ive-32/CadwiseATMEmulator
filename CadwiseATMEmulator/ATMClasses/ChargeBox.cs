@@ -3,6 +3,9 @@ using System.Windows.Input;
 
 namespace CadwiseATMEmulator
 {
+    /// <summary>
+    /// Бокс для приема/выдачи купюр
+    /// </summary>
     public class ChargeBox 
     {
         public List<BillsStack> BillsStacks = new List<BillsStack>();

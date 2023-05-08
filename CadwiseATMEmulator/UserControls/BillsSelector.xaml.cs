@@ -30,7 +30,7 @@ namespace CadwiseATMEmulator
 
             var (width, height) = Helpers.GridSizeCalculator.GetGridSize(ATM.BanknotesTypes.Length);
             
-            // Вычисляем и строим таблицу со счетчиками 
+            // Вычисляем и строим таблицу со счетчиками купюр для каждого номинала 
             for (int i = 0; i < height; i++)
                 BillsGrid.RowDefinitions.Add(new RowDefinition { 
                     Height = new System.Windows.GridLength(

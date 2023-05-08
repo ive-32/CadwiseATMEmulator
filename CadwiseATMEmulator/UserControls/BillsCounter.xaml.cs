@@ -98,7 +98,6 @@ namespace CadwiseATMEmulator
         {
             OnPropertyChanged("CountText");
             OnPropertyChanged("AmountText");
-            OnPropertyChanged("DenominationText");
             OnPropertyChanged("TotalString");
         }
     }
