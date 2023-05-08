@@ -1,0 +1,1 @@
+https://www.codeproject.com/Articles/124183/Numeric-Up-Down-Textbox-that-Inherits-from-TextBox
