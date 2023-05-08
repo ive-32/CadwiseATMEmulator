@@ -3,6 +3,8 @@ using System.ComponentModel;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CadwiseATMEmulator
 {
@@ -46,9 +48,12 @@ namespace CadwiseATMEmulator
             OnPropertyChanged("CurrentContentVM");
         }
 
-        public void PutMoney_Executed(object sender, ExecutedRoutedEventArgs e)
+        public async void PutMoney_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            var result = AtmEmulator.PutMoney((CurrentContentVM as ChargeBoxScreen).ChargeBox);
+            CurrentContentVM = new AwaitingScreen();
+            OnPropertyChanged("CurrentContentVM");
+            
+            var result = await AtmEmulator.PutMoney();
 
             if (result.Result == TransactionResultType.Success)
                 CurrentContentVM = new MainPage();
@@ -64,13 +69,16 @@ namespace CadwiseATMEmulator
             OnPropertyChanged("CurrentContentVM");
         }
 
-        public void GetMoney_Executed(object sender, ExecutedRoutedEventArgs e)
+        public async void GetMoney_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            var result = AtmEmulator.GetMoney();
+            CurrentContentVM = new AwaitingScreen();
+            OnPropertyChanged("CurrentContentVM");
 
-            (CurrentContentVM as ChargeBoxScreen).ChargeBox.OperationDescription = result.ResultMessage + " Заберите деньги из приемника";
-            (CurrentContentVM as ChargeBoxScreen).ChargeBox.OperationName = "Готово";
-            (CurrentContentVM as ChargeBoxScreen).ChargeBox.RoutedCommand = ATMCommands.ShowMainScreen;
+            var result = await AtmEmulator.GetMoney();
+
+            AtmEmulator.ChargeBox.OperationDescription = result.ResultMessage + " Заберите деньги из приемника";
+            AtmEmulator.ChargeBox.OperationName = "Готово";
+            AtmEmulator.ChargeBox.RoutedCommand = ATMCommands.ShowMainScreen;
             CurrentContentVM = new ChargeBoxScreen(AtmEmulator.ChargeBox);
             OnPropertyChanged("CurrentContentVM");
         }
@@ -92,7 +100,7 @@ namespace CadwiseATMEmulator
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
         public void ShowMainScreen_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-            => e.CanExecute = !(CurrentContentVM is MainPage);
+            => e.CanExecute = !(CurrentContentVM is MainPage) && !(CurrentContentVM is AwaitingScreen);
 
         public void PutMoney_CanExecute(object sender, CanExecuteRoutedEventArgs e)
             => e.CanExecute = AtmEmulator.ChargeBox.BillsStacks.Any(bs => bs.Count > 0);

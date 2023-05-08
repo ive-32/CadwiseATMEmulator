@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CadwiseATMEmulator
 {
@@ -27,11 +29,19 @@ namespace CadwiseATMEmulator
                 Tanks.Add(new Tank() { Denomination = banknoteType, Volume = 10, Count = 5 });
         }
 
-        public ATMTransactionResult PutMoney(IChargeBox chargeBox)
+        public async Task<ATMTransactionResult> PutMoney(IChargeBox chargeBox = null)
         {
             // вносим банкноты в ящики - игнорим неверные номиналы,
             // TODO здесь же добавляем проверку на подлинность купюр
             // все, что не влезло или не распознано - возвращаем
+
+            // метод будет выполняться асинхронно т.к. будет ждать ответа оборудования
+            // здес эмулируем задержку
+            await Task.Delay(600); 
+
+            // chargeBox ??= ChargeBox will appear only in c#8
+            if (chargeBox == null)
+                chargeBox = ChargeBox;
 
             var totalAmount = 0;
             foreach (var tank in Tanks)
@@ -73,13 +83,17 @@ namespace CadwiseATMEmulator
             };
         }
 
-        public ATMTransactionResult GetMoney(IChargeBox chargeBox = null)
+        public async Task<ATMTransactionResult> GetMoney(IChargeBox chargeBox = null)
         {
-            var totalAmount = 0;
+            // метод будет выполняться асинхронно т.к. будет ждать ответа оборудования
+            // здес эмулируем задержку
+            await Task.Delay(600);
 
             // chargeBox ??= ChargeBox will appear only in c#8
             if (chargeBox == null) 
                 chargeBox = ChargeBox;
+
+            var totalAmount = 0;
 
             foreach (var billstack in chargeBox.BillsStacks)
             {

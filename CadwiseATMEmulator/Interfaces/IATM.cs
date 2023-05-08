@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace CadwiseATMEmulator
 {
@@ -8,12 +9,16 @@ namespace CadwiseATMEmulator
 
         IChargeBox ChargeBox { get; set; }
 
-        List<Tank> Tanks { get; set; } 
+        List<Tank> Tanks { get; set; }
 
-        ATMTransactionResult GetMoney(IChargeBox chargeBox = null);
-        ATMTransactionResult PutMoney(IChargeBox chargeBox);
+        Task<ATMTransactionResult> GetMoney(IChargeBox chargeBox = null);
+
+        Task<ATMTransactionResult> PutMoney(IChargeBox chargeBox = null);
+
         void SetLimitsForGetMoney();
+
         void SetLimitsForPutMoney();
+
         void SetLimitsMax();
     }
 }
