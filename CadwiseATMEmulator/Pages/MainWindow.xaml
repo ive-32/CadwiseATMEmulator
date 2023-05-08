@@ -6,19 +6,8 @@
         xmlns:local="clr-namespace:CadwiseATMEmulator" 
         mc:Ignorable="d"
         Title="MainWindow" Height="600" Width="1000">
-    <Window.CommandBindings>
-        <CommandBinding Command="local:ATMCommands.PutMoney" Executed="PutMoney_Executed"></CommandBinding>
-    </Window.CommandBindings>
-    <Window.Resources>
-        <!-->
-            <DataTemplate DataType="{x:Type local:MainPage}">
-            <local:MainPage />
-        </DataTemplate>
-        <DataTemplate DataType="{x:Type local:BillsSelector}">
-            <local:BillsSelector />
-        </DataTemplate>
-        </!-->
-    </Window.Resources>
+    
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>

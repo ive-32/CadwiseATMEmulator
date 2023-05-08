@@ -60,6 +60,9 @@
     <Compile Include="ATMClasses\ATMTransactionResult.cs" />
     <Compile Include="ATMClasses\ChargeBox.cs" />
     <Compile Include="ATMClasses\BillsStack.cs" />
+    <Compile Include="Interfaces\IChargeBox.cs" />
+    <Compile Include="Interfaces\IATM.cs" />
+    <Compile Include="VMClasses\AtmVM.cs" />
     <Compile Include="UserControls\BillsCounter.xaml.cs">
       <DependentUpon>BillsCounter.xaml</DependentUpon>
     </Compile>

@@ -7,13 +7,13 @@ namespace CadwiseATMEmulator
     /// </summary>
     public partial class ChargeBoxScreen : UserControl
     {
-        public ChargeBox ChargeBox { get; set; }
+        public IChargeBox ChargeBox { get; set; }
 
-        public ChargeBoxScreen(ChargeBox chargeBox)
+        public ChargeBoxScreen(IChargeBox chargeBox)
         {
             InitializeComponent();
             DataContext = chargeBox;
-            ChargeBox = chargeBox;
+            ChargeBox = chargeBox ?? new ChargeBox();
 
             BillsSelector billsSelector = new BillsSelector(chargeBox);
             MainGrid.Children.Add(billsSelector);

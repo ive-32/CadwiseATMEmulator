@@ -20,11 +20,11 @@ namespace CadwiseATMEmulator
             }
         }
 
-        private ChargeBox ChargeBox { get; set; }
+        private IChargeBox ChargeBox { get; set; }
 
-        public BillsSelector(ChargeBox chargeBox)
+        public BillsSelector(IChargeBox chargeBox)
         {
-            ChargeBox = chargeBox;
+            ChargeBox = chargeBox ?? new ChargeBox();
             InitializeComponent();
             DataContext = this;
 

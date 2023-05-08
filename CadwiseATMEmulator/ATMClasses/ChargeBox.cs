@@ -6,9 +6,9 @@ namespace CadwiseATMEmulator
     /// <summary>
     /// Бокс для приема/выдачи купюр
     /// </summary>
-    public class ChargeBox 
+    public class ChargeBox : IChargeBox
     {
-        public List<BillsStack> BillsStacks = new List<BillsStack>();
+        public List<BillsStack> BillsStacks { get; set; } = new List<BillsStack>();
 
         public string OperationDescription { get; set; }
 
@@ -18,7 +18,7 @@ namespace CadwiseATMEmulator
 
         public ChargeBox()
         {
-            foreach(var denomination in ATM.BanknotesTypes)
+            foreach (var denomination in ATM.BanknotesTypes)
                 BillsStacks.Add(new BillsStack(denomination));
         }
 

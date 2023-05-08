@@ -4,7 +4,7 @@
     {
         public TransactionResultType Result;
 
-        public ChargeBox ChargeBox;
+        public IChargeBox ChargeBox;
 
         public string ResultMessage;
     }

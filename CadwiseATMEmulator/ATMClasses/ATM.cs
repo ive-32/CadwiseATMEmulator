@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 
 namespace CadwiseATMEmulator
@@ -8,16 +7,17 @@ namespace CadwiseATMEmulator
     /// <summary>
     /// Класс банкомата
     /// </summary>
-    public class ATM
+    public class ATM : IATM
     {
+        public static int[] BanknotesTypes = { 10, 50, 100, 200, 500, 1000, 2000, 5000 };
+
         public delegate void AtmTanksChanged();
         public event AtmTanksChanged OnChange;
 
-        public ChargeBox ChargeBox = new ChargeBox();
+        public IChargeBox ChargeBox { get; set; } = new ChargeBox();
 
-        public static int[] BanknotesTypes = { 10, 50, 100, 200, 500, 1000, 2000, 5000 };
 
-        public List<Tank> Tanks = new List<Tank>();
+        public List<Tank> Tanks { get; set; } = new List<Tank>();
 
         public ATM()
         {
@@ -27,7 +27,7 @@ namespace CadwiseATMEmulator
                 Tanks.Add(new Tank() { Denomination = banknoteType, Volume = 10, Count = 5 });
         }
 
-        public ATMTransactionResult PutMoney(ChargeBox chargeBox)
+        public ATMTransactionResult PutMoney(IChargeBox chargeBox)
         {
             // вносим банкноты в ящики - игнорим неверные номиналы,
             // TODO здесь же добавляем проверку на подлинность купюр
@@ -73,11 +73,12 @@ namespace CadwiseATMEmulator
             };
         }
 
-        public ATMTransactionResult GetMoney(ChargeBox chargeBox = null)
+        public ATMTransactionResult GetMoney(IChargeBox chargeBox = null)
         {
             var totalAmount = 0;
 
-            if (chargeBox == null)
+            // chargeBox ??= ChargeBox will appear only in c#8
+            if (chargeBox == null) 
                 chargeBox = ChargeBox;
 
             foreach (var billstack in chargeBox.BillsStacks)
@@ -108,7 +109,7 @@ namespace CadwiseATMEmulator
 
         public void SetLimitsForGetMoney()
         {
-            foreach(var tank in Tanks)
+            foreach (var tank in Tanks)
             {
                 var billsStack = ChargeBox.BillsStacks
                     .FirstOrDefault(bs => bs.Denomination == tank.Denomination);
@@ -125,12 +126,12 @@ namespace CadwiseATMEmulator
             {
                 var tank = Tanks.FirstOrDefault(t => t.Denomination == billsStack.Denomination);
                 billsStack.MaxValue = tank.Volume - tank.Count;
-                
+
                 //в строке ниже ставим 20 чтобы можно было проверить что напихали больше купюр
                 //чем может принять банкомат
                 billsStack.MaxValue = 20;
             }
-           
+
         }
 
         public void SetLimitsMax()
