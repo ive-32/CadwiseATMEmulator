@@ -5,11 +5,11 @@ namespace CadwiseATMEmulator
     /// <summary>
     /// Interaction logic for SuccessPutMoney.xaml
     /// </summary>
-    public partial class SuccessPutMoney : UserControl
+    public partial class SuccessScreen : UserControl
     {
         public string ResultString { get; set; } = "Операция выполнена";
 
-        public SuccessPutMoney(string message)
+        public SuccessScreen(string message)
         {
             ResultString = message;
             InitializeComponent();

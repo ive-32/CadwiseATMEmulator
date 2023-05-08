@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Linq;
+using System;
 
 namespace CadwiseATMEmulator
 {
@@ -55,15 +56,21 @@ namespace CadwiseATMEmulator
 
             if (result.Result == TransactionResultType.Success)
             {
-                CurrentContentVM = new SuccessPutMoney(result.ResultMessage);
+                CurrentContentVM = new SuccessScreen(result.ResultMessage);
             }
 
             if (result.Result == TransactionResultType.MoneyReturned)
             {
-                AtmEmulator.ChargeBox.OperationDescription = result.ResultMessage + " Заберите возврат";
+                CurrentContentVM = new SuccessScreen(result.ResultMessage + 
+                    Environment.NewLine +
+                    Environment.NewLine + 
+                    AtmEmulator.ChargeBox.ToString());
+
+                //для варианта когда возврат отображается в виде селектора купюр
+                /*AtmEmulator.ChargeBox.OperationDescription = result.ResultMessage + " Заберите возврат";
                 AtmEmulator.ChargeBox.OperationName = "Готово";
                 AtmEmulator.ChargeBox.RoutedCommand = ATMCommands.ShowMainScreen;
-                CurrentContentVM = new ChargeBoxScreen(AtmEmulator.ChargeBox);
+                CurrentContentVM = new ChargeBoxScreen(AtmEmulator.ChargeBox);*/
             };
 
             CommandManager.InvalidateRequerySuggested();
@@ -77,11 +84,17 @@ namespace CadwiseATMEmulator
 
             var result = await AtmEmulator.GetMoney();
 
-            CurrentContentVM = new ChargeBoxScreen(AtmEmulator.ChargeBox);
+            CurrentContentVM = new SuccessScreen(result.ResultMessage +
+                    Environment.NewLine +
+                    Environment.NewLine +
+                    AtmEmulator.ChargeBox.ToString());
+
+            //для варианта когда выдача отображается в виде селектора купюр
+            /*CurrentContentVM = new ChargeBoxScreen(AtmEmulator.ChargeBox);
             AtmEmulator.ChargeBox.OperationDescription = result.ResultMessage + " Заберите деньги из приемника";
             AtmEmulator.ChargeBox.OperationName = "Готово";
-            AtmEmulator.ChargeBox.RoutedCommand = ATMCommands.ShowMainScreen;
-            
+            AtmEmulator.ChargeBox.RoutedCommand = ATMCommands.ShowMainScreen;*/
+
             CommandManager.InvalidateRequerySuggested();
             OnPropertyChanged("CurrentContentVM");
         }
