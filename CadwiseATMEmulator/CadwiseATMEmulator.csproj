@@ -60,11 +60,14 @@
     <Compile Include="ATMClasses\ATMTransactionResult.cs" />
     <Compile Include="ATMClasses\ChargeBox.cs" />
     <Compile Include="ATMClasses\BillsStack.cs" />
-    <Compile Include="AwaitingScreen.xaml.cs">
+    <Compile Include="Pages\AwaitingScreen.xaml.cs">
       <DependentUpon>AwaitingScreen.xaml</DependentUpon>
     </Compile>
     <Compile Include="Interfaces\IChargeBox.cs" />
     <Compile Include="Interfaces\IATM.cs" />
+    <Compile Include="Pages\SuccessPutMoney.xaml.cs">
+      <DependentUpon>SuccessPutMoney.xaml</DependentUpon>
+    </Compile>
     <Compile Include="VMClasses\AtmVM.cs" />
     <Compile Include="UserControls\BillsCounter.xaml.cs">
       <DependentUpon>BillsCounter.xaml</DependentUpon>
@@ -74,7 +77,11 @@
     </Compile>
     <Compile Include="ATMClasses\Tank.cs" />
     <Compile Include="ATMClasses\TransactionResultType.cs" />
-    <Page Include="AwaitingScreen.xaml">
+    <Page Include="Pages\AwaitingScreen.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\SuccessPutMoney.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -3,8 +3,6 @@ using System.ComponentModel;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace CadwiseATMEmulator
 {
@@ -56,7 +54,9 @@ namespace CadwiseATMEmulator
             var result = await AtmEmulator.PutMoney();
 
             if (result.Result == TransactionResultType.Success)
-                CurrentContentVM = new MainPage();
+            {
+                CurrentContentVM = new SuccessPutMoney(result.ResultMessage);
+            }
 
             if (result.Result == TransactionResultType.MoneyReturned)
             {
@@ -66,6 +66,7 @@ namespace CadwiseATMEmulator
                 CurrentContentVM = new ChargeBoxScreen(AtmEmulator.ChargeBox);
             };
 
+            CommandManager.InvalidateRequerySuggested();
             OnPropertyChanged("CurrentContentVM");
         }
 
@@ -76,10 +77,12 @@ namespace CadwiseATMEmulator
 
             var result = await AtmEmulator.GetMoney();
 
+            CurrentContentVM = new ChargeBoxScreen(AtmEmulator.ChargeBox);
             AtmEmulator.ChargeBox.OperationDescription = result.ResultMessage + " Заберите деньги из приемника";
             AtmEmulator.ChargeBox.OperationName = "Готово";
             AtmEmulator.ChargeBox.RoutedCommand = ATMCommands.ShowMainScreen;
-            CurrentContentVM = new ChargeBoxScreen(AtmEmulator.ChargeBox);
+            
+            CommandManager.InvalidateRequerySuggested();
             OnPropertyChanged("CurrentContentVM");
         }
 
