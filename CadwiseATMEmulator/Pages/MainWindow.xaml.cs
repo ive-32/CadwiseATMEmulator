@@ -21,10 +21,12 @@ namespace CadwiseATMEmulator
 
             CommandBinding bind = new CommandBinding(ATMCommands.PutMoney);
             bind.Executed += AtmVM.PutMoney_Executed;
+            bind.CanExecute += AtmVM.PutMoney_CanExecute;
             this.CommandBindings.Add(bind);
 
             bind = new CommandBinding(ATMCommands.GetMoney);
             bind.Executed += AtmVM.GetMoney_Executed;
+            bind.CanExecute += AtmVM.GetMoney_CanExecute;
             this.CommandBindings.Add(bind);
 
             bind = new CommandBinding(ATMCommands.ShowAskMoneyScreen);

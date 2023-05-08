@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Linq;
 
 namespace CadwiseATMEmulator
 {
@@ -92,6 +93,12 @@ namespace CadwiseATMEmulator
 
         public void ShowMainScreen_CanExecute(object sender, CanExecuteRoutedEventArgs e)
             => e.CanExecute = !(CurrentContentVM is MainPage);
+
+        public void PutMoney_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+            => e.CanExecute = AtmEmulator.ChargeBox.BillsStacks.Any(bs => bs.Count > 0);
+
+        public void GetMoney_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+            => e.CanExecute = AtmEmulator.ChargeBox.BillsStacks.Any(bs => bs.Count > 0);
 
         public void AtmEmulator_OnChange()
         {

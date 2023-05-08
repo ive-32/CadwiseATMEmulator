@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Controls;
-using System.Xml.Linq;
+using System.Linq;
 
 namespace CadwiseATMEmulator
 {
@@ -47,7 +47,7 @@ namespace CadwiseATMEmulator
             for (int i = 0; i < ATM.BanknotesTypes.Length; i++)
             {
                 var billStack = ChargeBox.BillsStacks
-                    .Find(bs => bs.Denomination == ATM.BanknotesTypes[i]);
+                    .FirstOrDefault(bs => bs.Denomination == ATM.BanknotesTypes[i]);
 
                 if (!(billStack is BillsStack)) 
                     billStack = new BillsStack(ATM.BanknotesTypes[i]);
