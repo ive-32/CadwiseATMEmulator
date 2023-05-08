@@ -67,10 +67,7 @@ namespace CadwiseATMEmulator
                 {
                     Result = TransactionResultType.MoneyReturned,
                     ChargeBox = chargeBox,
-                    ResultMessage = $"Принято {totalAmount}, не приняты купюры: " +
-                        string.Join(", ", chargeBox.BillsStacks
-                            .Where(m => m.Count > 0)
-                            .Select(d => $"[{d.Denomination}: {d.Count} шт]")) + "."
+                    ResultMessage = $"Принято {totalAmount}, заберите непринятые купюры."
                 };
             }
 
@@ -107,6 +104,7 @@ namespace CadwiseATMEmulator
                 else
                     tank.Count -= billstack.Count;
 
+                billstack.MaxValue = billstack.Count;
                 totalAmount += billstack.Count * billstack.Denomination;
             }
 

@@ -65,8 +65,8 @@
     </Compile>
     <Compile Include="Interfaces\IChargeBox.cs" />
     <Compile Include="Interfaces\IATM.cs" />
-    <Compile Include="Pages\SuccessPutMoney.xaml.cs">
-      <DependentUpon>SuccessPutMoney.xaml</DependentUpon>
+    <Compile Include="Pages\SuccessScreen.xaml.cs">
+      <DependentUpon>SuccessScreen.xaml</DependentUpon>
     </Compile>
     <Compile Include="VMClasses\AtmVM.cs" />
     <Compile Include="UserControls\BillsCounter.xaml.cs">
@@ -81,7 +81,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\SuccessPutMoney.xaml">
+    <Page Include="Pages\SuccessScreen.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

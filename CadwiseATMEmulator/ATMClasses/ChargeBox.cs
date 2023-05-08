@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Input;
+using System.Linq;
+using System;
 
 namespace CadwiseATMEmulator
 {
@@ -30,5 +32,12 @@ namespace CadwiseATMEmulator
             foreach (var billsStack in BillsStacks)
                 billsStack.Count = 0;
         }
+
+        public override string ToString()
+            => "В купюроприемнике следующие купюры: " + Environment.NewLine + 
+                string.Join(Environment.NewLine, 
+                        BillsStacks.Where(bs => bs.Count > 0)
+                        .Select(bs => $"Номинал {bs.Denomination}: {bs.Count} шт"));
+            
     }
 }
