@@ -10,7 +10,7 @@ namespace CadwiseATMEmulator
     /// </summary>
     public class ATM : IATM
     {
-        public static int[] BanknotesTypes = { 10, 50, 100, 200, 500, 1000, 2000, 5000 };
+        public static readonly int[] BanknotesTypes = { 10, 50, 100, 200, 500, 1000, 2000, 5000 };
 
         public delegate void AtmTanksChanged();
         public event AtmTanksChanged OnChange;
@@ -45,24 +45,27 @@ namespace CadwiseATMEmulator
             var totalAmount = 0;
             foreach (var tank in Tanks)
             {
-                var billsstack = chargeBox.BillsStacks
+                var billsStack = chargeBox.BillsStacks
                     .FirstOrDefault(m => m.Denomination == tank.Denomination);
 
-                if (billsstack is BillsStack)
-                {
-                    var allowedCount = Math.Min(tank.Volume - tank.Count, billsstack.Count);
+                if (billsStack == null) continue;
+                
+                var allowedCount = Math.Min(tank.Volume - tank.Count, billsStack.Count);
 
-                    tank.Count += allowedCount;
-                    billsstack.Count -= allowedCount;
-                    totalAmount += allowedCount * tank.Denomination;
-                }
+                tank.Count += allowedCount;
+                billsStack.Count -= allowedCount;
+                totalAmount += allowedCount * tank.Denomination;
+                
+                // для эмуляции возврата, через селектор купюр
+                // ограничиваем значеие ячейки селектора текущим значением, чтобы не было ощущения
+                // что можно вытащить больше чем там лежит   
+                billsStack.MaxValue = billsStack.Count;  
             }
 
             OnChange?.Invoke();
 
             if (chargeBox.BillsStacks.Any(m => m.Count > 0))
             {
-                SetLimitsMax(); // для сохранения интерфейса - в реале это возврат и лимиты устанавливать не нужно
                 return new ATMTransactionResult()
                 {
                     Result = TransactionResultType.MoneyReturned,
@@ -91,21 +94,26 @@ namespace CadwiseATMEmulator
 
             var totalAmount = 0;
 
-            foreach (var billstack in chargeBox.BillsStacks)
+            foreach (var billStack in chargeBox.BillsStacks)
             {
-                var tank = Tanks.FirstOrDefault(t => t.Denomination == billstack.Denomination);
-                if (!(tank is Tank)) continue;
+                var tank = Tanks.FirstOrDefault(t => t.Denomination == billStack.Denomination);
 
-                if (billstack.Count >= tank.Count)
+                if (tank == null) continue;
+
+                if (billStack.Count >= tank.Count)
                 {
-                    billstack.Count = tank.Count;
+                    billStack.Count = tank.Count;
                     tank.Count = 0;
                 }
                 else
-                    tank.Count -= billstack.Count;
+                    tank.Count -= billStack.Count;
 
-                billstack.MaxValue = billstack.Count;
-                totalAmount += billstack.Count * billstack.Denomination;
+                totalAmount += billStack.Count * billStack.Denomination;
+                
+                // для эмуляции возврата, через селектор купюр
+                // ограничиваем значеие ячейки селектора текущим значением, чтобы не было ощущения
+                // что можно вытащить больше чем там лежит   
+                billStack.MaxValue = billStack.Count;
             }
 
             OnChange?.Invoke();
@@ -125,7 +133,7 @@ namespace CadwiseATMEmulator
                 var billsStack = ChargeBox.BillsStacks
                     .FirstOrDefault(bs => bs.Denomination == tank.Denomination);
 
-                if (!(billsStack is BillsStack)) continue;
+                if (billsStack == null) continue;
 
                 billsStack.MaxValue = tank.Count;
             }
@@ -136,19 +144,17 @@ namespace CadwiseATMEmulator
             foreach (var billsStack in ChargeBox.BillsStacks)
             {
                 var tank = Tanks.FirstOrDefault(t => t.Denomination == billsStack.Denomination);
-                billsStack.MaxValue = tank.Volume - tank.Count;
+                
+                if (tank == null) continue;
+                
+                // здесь ограничиваем внесение купюр реальной емкостью ящиков 
+                // закомментировал, чтобы наглядее показывать как возвращаются непринятые купюры
+                //billsStack.MaxValue = tank.Volume - tank.Count;
 
-                //в строке ниже ставим 20 чтобы можно было проверить что напихали больше купюр
+                //в строке ниже ставим 20 чтобы можно было проверить, что напихали больше купюр
                 //чем может принять банкомат
                 billsStack.MaxValue = 20;
             }
-
-        }
-
-        public void SetLimitsMax()
-        {
-            foreach (var billsStack in ChargeBox.BillsStacks)
-                billsStack.MaxValue = 20;
         }
     }
 }

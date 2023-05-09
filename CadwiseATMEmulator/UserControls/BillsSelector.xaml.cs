@@ -5,20 +5,14 @@ using System.Linq;
 
 namespace CadwiseATMEmulator
 {
-    public partial class BillsSelector : UserControl, INotifyPropertyChanged
+    public partial class BillsSelector : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public List<BillsCounter> billsCounters = new List<BillsCounter>();
+        private readonly List<BillsCounter> _billsCounters = new List<BillsCounter>();
 
-        public string TotalString { get
-            {
-                var result = 0;
-                foreach (var billsCounter in billsCounters)
-                    result += billsCounter.BillsStack.Count * billsCounter.BillsStack.Denomination;
-                return $"Итого {result}";
-            }
-        }
+        public string TotalString =>
+            $"Итого {_billsCounters.Sum(bs => bs.BillsStack.Count * bs.BillsStack.Denomination)}";
 
         private IChargeBox ChargeBox { get; set; }
 
@@ -31,33 +25,30 @@ namespace CadwiseATMEmulator
             var (width, height) = Helpers.GridSizeCalculator.GetGridSize(ATM.BanknotesTypes.Length);
             
             // Вычисляем и строим таблицу со счетчиками купюр для каждого номинала 
-            for (int i = 0; i < height; i++)
+            for (var i = 0; i < height; i++)
                 BillsGrid.RowDefinitions.Add(new RowDefinition { 
                     Height = new System.Windows.GridLength(
                         1.0f / height, 
                         System.Windows.GridUnitType.Star)});
 
-            for (int i = 0; i < width; i++)
+            for (var i = 0; i < width; i++)
                 BillsGrid.ColumnDefinitions.Add(new ColumnDefinition { 
                     Width = new System.Windows.GridLength(
                         1.0f / width, 
                         System.Windows.GridUnitType.Star) });
 
 
-            for (int i = 0; i < ATM.BanknotesTypes.Length; i++)
+            for (var i = 0; i < ATM.BanknotesTypes.Length; i++)
             {
-                var billStack = ChargeBox.BillsStacks
-                    .FirstOrDefault(bs => bs.Denomination == ATM.BanknotesTypes[i]);
-
-                if (!(billStack is BillsStack)) 
-                    billStack = new BillsStack(ATM.BanknotesTypes[i]);
+                var billStack = ChargeBox.BillsStacks.FirstOrDefault(bs => bs.Denomination == ATM.BanknotesTypes[i]) 
+                                ?? new BillsStack(ATM.BanknotesTypes[i]);
 
                 var billsCounter = new BillsCounter(billStack);
 
                 billsCounter.SetValue(Grid.RowProperty, i / width);
                 billsCounter.SetValue(Grid.ColumnProperty, i % width);
                 
-                billsCounters.Add(billsCounter);
+                _billsCounters.Add(billsCounter);
 
                 BillsGrid.Children.Add(billsCounter);
 
@@ -65,7 +56,7 @@ namespace CadwiseATMEmulator
             }
         }
 
-        private void BillsCounter_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void BillsCounter_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("TotalString"));
         }

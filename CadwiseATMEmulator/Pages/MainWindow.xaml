@@ -26,16 +26,14 @@
             <Button Grid.Column="1" Content="Выйти" Margin="5,5,5,5"
                     Command="local:ATMCommands.ShowMainScreen"/>
         </Grid>
-        <ContentControl Grid.Row="1" Content="{Binding CurrentContentVM}"/>
+        <ContentControl Grid.Row="1" Grid.Column="0" Content="{Binding CurrentContentVM}"/>
         
-        <TextBlock Grid.Row ="2" TextAlignment="Center" VerticalAlignment="Center" 
+        <TextBlock Grid.Row ="2" Grid.Column="0" TextAlignment="Center" VerticalAlignment="Center" 
                    FontSize="8"
                    Background="Beige" Margin="5,5,5,5">
                 Если возникли проблемы с банкоматом звоните в &quot;СпортЛото&quot;<LineBreak/>
                 Или свяжитесь с разработчиком ive-32@yandex.ru
-         </TextBlock>
-        <ListBox x:Name="DebugListBox" Grid.Column="1" Grid.Row="1" Margin="5,5,5,5">
-            
-        </ListBox>
+        </TextBlock>
+        <ListBox x:Name="DebugListBox" Grid.Column="1" Grid.Row="1" Margin="5,5,5,5"/>
     </Grid>
 </Window>

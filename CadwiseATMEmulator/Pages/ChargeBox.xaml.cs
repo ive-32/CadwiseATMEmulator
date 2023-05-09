@@ -15,7 +15,7 @@ namespace CadwiseATMEmulator
             DataContext = chargeBox;
             ChargeBox = chargeBox ?? new ChargeBox();
 
-            BillsSelector billsSelector = new BillsSelector(chargeBox);
+            var billsSelector = new BillsSelector(chargeBox);
             MainGrid.Children.Add(billsSelector);
 
             billsSelector.SetValue(Grid.RowProperty, 1);

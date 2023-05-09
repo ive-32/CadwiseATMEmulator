@@ -25,7 +25,7 @@ namespace CadwiseATMEmulator
         }
 
         /// <summary>
-        /// очистка ящика - имитация того что деньги забрал человек
+        /// очистка ящика - имитация того, что деньги забрал человек
         /// </summary>
         public void ClearChargeBox()
         {

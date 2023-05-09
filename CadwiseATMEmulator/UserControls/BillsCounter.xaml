@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:CadwiseATMEmulator"
              mc:Ignorable="d" 
              d:DesignHeight="30" d:DesignWidth="80">
     <UserControl.Resources>
@@ -30,15 +29,14 @@
                  FocusManager.LostFocus="AmountTextBoxLostFocus"
                  Style="{StaticResource BigNumbersAtCenter}"/>
         
-        <TextBox x:Name="CountTextBox" Grid.Column="1" Grid.RowSpan="2"
+        <TextBox x:Name="CountTextBox" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2"
                  Text="{Binding CountText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                  Style="{StaticResource BigNumbersAtCenter}"/>
         
-        <Button Grid.Column="2" Grid.Row="0" Content="+" Click="IncCount"/>
-        <Button Grid.Column="2" Grid.Row="1" Content="-" Click="DecCount"/>
+        <Button Grid.Row="0" Grid.Column="2" Content="+" Click="IncCount"/>
+        <Button Grid.Row="1" Grid.Column="2" Content="-" Click="DecCount"/>
         <Label x:Name="DenominationLabel" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2"
                HorizontalContentAlignment="Center"
                Content="{Binding DenominationText, Mode=OneWay}" />
-        
     </Grid>
 </UserControl>

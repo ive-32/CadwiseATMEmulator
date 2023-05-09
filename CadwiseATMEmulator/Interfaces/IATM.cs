@@ -18,7 +18,5 @@ namespace CadwiseATMEmulator
         void SetLimitsForGetMoney();
 
         void SetLimitsForPutMoney();
-
-        void SetLimitsMax();
     }
 }

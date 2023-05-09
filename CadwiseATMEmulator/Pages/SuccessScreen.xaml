@@ -20,6 +20,5 @@
                HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
                FontSize="40" Background="Beige"
                Command="local:ATMCommands.ShowMainScreen"/>
-        
     </Grid>
 </UserControl>

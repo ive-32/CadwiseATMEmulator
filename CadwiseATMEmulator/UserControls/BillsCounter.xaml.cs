@@ -32,14 +32,14 @@ namespace CadwiseATMEmulator
                     res = 0;
 
                 BillsStack.Count = res;
-                amount = (res * BillsStack.Denomination).ToString();
+                _amount = (res * BillsStack.Denomination).ToString();
                 RaiseUpdateFields();
             }
         }
 
         public string AmountText
         {
-            get => amount == "0" ? "" : amount;
+            get => _amount == "0" ? "" : _amount;
             set
             {
                 if (!Regex.IsMatch(value, @"(^\-?\d+$)|(^$)"))
@@ -53,15 +53,15 @@ namespace CadwiseATMEmulator
                 if (res < 0) 
                     res = 0;
 
-                amount = res.ToString();
+                _amount = res.ToString();
                 BillsStack.Count = (int)Math.Round((float)res / BillsStack.Denomination);
                 RaiseUpdateFields();
             }
         }
 
-        public string DenominationText { get => $"Номинал {BillsStack.Denomination}"; }
+        public string DenominationText => $"Номинал {BillsStack.Denomination}";
 
-        private string amount = "0";
+        private string _amount = "0";
 
         protected void OnPropertyChanged(string name)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
@@ -73,7 +73,7 @@ namespace CadwiseATMEmulator
             CountTextBox.DataContext = this;
             DenominationLabel.DataContext = this;
             BillsStack = billsStack;
-            amount = (billsStack.Count * billsStack.Denomination).ToString();
+            _amount = (billsStack.Count * billsStack.Denomination).ToString();
         }
 
         private void AmountTextBoxLostFocus(object sender, RoutedEventArgs e)

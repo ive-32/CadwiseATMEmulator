@@ -12,10 +12,8 @@ namespace CadwiseATMEmulator.Helpers
             if (countOfCells <= 0) 
                 return (0, 0);
 
-            int width = (int)Math.Round(Math.Sqrt(countOfCells));
-            int height;
-
-            height = countOfCells / width;
+            var width = (int)Math.Round(Math.Sqrt(countOfCells));
+            var height = countOfCells / width;
 
             if (width * height < countOfCells)
                 width++;

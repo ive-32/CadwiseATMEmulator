@@ -1,7 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Windows;
-using System.Windows.Controls;
+﻿using System.Windows;
 using System.Windows.Input;
 
 namespace CadwiseATMEmulator
@@ -19,35 +16,32 @@ namespace CadwiseATMEmulator
             InitializeComponent();
             DataContext = AtmVM;
 
-            CommandBinding bind = new CommandBinding(ATMCommands.PutMoney);
+            var bind = new CommandBinding(ATMCommands.PutMoney);
             bind.Executed += AtmVM.PutMoney_Executed;
             bind.CanExecute += AtmVM.PutMoney_CanExecute;
-            this.CommandBindings.Add(bind);
+            CommandBindings.Add(bind);
 
             bind = new CommandBinding(ATMCommands.GetMoney);
             bind.Executed += AtmVM.GetMoney_Executed;
             bind.CanExecute += AtmVM.GetMoney_CanExecute;
-            this.CommandBindings.Add(bind);
+            CommandBindings.Add(bind);
 
             bind = new CommandBinding(ATMCommands.ShowAskMoneyScreen);
             bind.Executed += AtmVM.ShowAskMoneyScreen_Executed;
-            this.CommandBindings.Add(bind);
+            CommandBindings.Add(bind);
 
             bind = new CommandBinding(ATMCommands.ShowPutMoneyScreen);
             bind.Executed += AtmVM.ShowPutMoneyScreen_Executed;
-            this.CommandBindings.Add(bind);
+            CommandBindings.Add(bind);
 
             bind = new CommandBinding(ATMCommands.ShowMainScreen);
             bind.Executed += AtmVM.ShowMainScreen_Executed;
             bind.CanExecute += AtmVM.ShowMainScreen_CanExecute;
-            this.CommandBindings.Add(bind);
+            CommandBindings.Add(bind);
 
             AtmVM.CurrentContentVM = new MainPage();
 
             DebugListBox.ItemsSource = AtmVM.AtmTanks;
-
         }
-
-        
     }
 }
