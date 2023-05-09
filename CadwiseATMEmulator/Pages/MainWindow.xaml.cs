@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Runtime.Serialization.Formatters.Binary;
+using System.Windows;
 using System.Windows.Input;
 
 namespace CadwiseATMEmulator
@@ -28,10 +29,12 @@ namespace CadwiseATMEmulator
 
             bind = new CommandBinding(ATMCommands.ShowAskMoneyScreen);
             bind.Executed += AtmVM.ShowAskMoneyScreen_Executed;
+            bind.CanExecute += AtmVM.ShowAskMoneyScreen_CanExecute;
             CommandBindings.Add(bind);
 
             bind = new CommandBinding(ATMCommands.ShowPutMoneyScreen);
             bind.Executed += AtmVM.ShowPutMoneyScreen_Executed;
+            bind.CanExecute += AtmVM.ShowPutMoneyScreen_CanExecute;
             CommandBindings.Add(bind);
 
             bind = new CommandBinding(ATMCommands.ShowMainScreen);
@@ -43,5 +46,6 @@ namespace CadwiseATMEmulator
 
             DebugListBox.ItemsSource = AtmVM.AtmTanks;
         }
+
     }
 }

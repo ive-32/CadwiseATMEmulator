@@ -25,10 +25,8 @@ namespace CadwiseATMEmulator
             AtmEmulator_OnChange();
         }
 
-
         public void ShowAskMoneyScreen_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-
             _atmEmulator.ChargeBox.OperationDescription = "Укажите купюры, которые выдать";
             _atmEmulator.ChargeBox.OperationName = "Выдать";
             _atmEmulator.ChargeBox.RoutedCommand = ATMCommands.GetMoney;
@@ -111,6 +109,12 @@ namespace CadwiseATMEmulator
             CurrentContentVM = new MainPage();
             OnPropertyChanged("CurrentContentVM");
         }
+        
+        public void ShowAskMoneyScreen_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+            => e.CanExecute = _atmEmulator.Tanks.Any(t => t.Count > 0);
+
+        public void ShowPutMoneyScreen_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+            => e.CanExecute = _atmEmulator.Tanks.Any(t => t.Volume - t.Count > 0);
 
         public void ShowMainScreen_CanExecute(object sender, CanExecuteRoutedEventArgs e)
             => e.CanExecute = !(CurrentContentVM is MainPage) && !(CurrentContentVM is AwaitingScreen);
