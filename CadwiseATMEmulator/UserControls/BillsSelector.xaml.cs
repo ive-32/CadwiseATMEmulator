@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Windows.Controls;
 using System.Linq;
+using System.Windows;
 
 namespace CadwiseATMEmulator
 {
@@ -9,10 +10,9 @@ namespace CadwiseATMEmulator
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private readonly List<BillsCounter> _billsCounters = new List<BillsCounter>();
+        public readonly List<BillsCounter> BillsCounters = new List<BillsCounter>();
 
-        public string TotalString =>
-            $"Итого {_billsCounters.Sum(bs => bs.BillsStack.Count * bs.BillsStack.Denomination)}";
+        private BillsSelectorVM BillsSelectorVM { get; set; }
 
         private IChargeBox ChargeBox { get; set; }
 
@@ -20,7 +20,10 @@ namespace CadwiseATMEmulator
         {
             ChargeBox = chargeBox ?? new ChargeBox();
             InitializeComponent();
-            DataContext = this;
+
+            BillsSelectorVM = new BillsSelectorVM(this);
+            TotalAmount.DataContext = BillsSelectorVM;
+            Total.DataContext = BillsSelectorVM;
 
             var (width, height) = Helpers.GridSizeCalculator.GetGridSize(ATM.BanknotesTypes.Length);
             
@@ -36,7 +39,7 @@ namespace CadwiseATMEmulator
                     Width = new System.Windows.GridLength(
                         1.0f / width, 
                         System.Windows.GridUnitType.Star) });
-
+            
 
             for (var i = 0; i < ATM.BanknotesTypes.Length; i++)
             {
@@ -48,17 +51,15 @@ namespace CadwiseATMEmulator
                 billsCounter.SetValue(Grid.RowProperty, i / width);
                 billsCounter.SetValue(Grid.ColumnProperty, i % width);
                 
-                _billsCounters.Add(billsCounter);
+                BillsCounters.Add(billsCounter);
 
                 BillsGrid.Children.Add(billsCounter);
 
-                billsCounter.PropertyChanged += BillsCounter_PropertyChanged;
+                billsCounter.PropertyChanged += BillsSelectorVM.BillsCounter_PropertyChanged;
             }
         }
-
-        private void BillsCounter_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("TotalString"));
-        }
+        
+        private void TotalAmountLostFocus(object sender, RoutedEventArgs e)
+            => BillsSelectorVM.TotalAmountLostFocus(sender, e);
     }
 }

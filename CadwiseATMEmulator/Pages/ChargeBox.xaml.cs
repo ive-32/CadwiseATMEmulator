@@ -9,16 +9,22 @@ namespace CadwiseATMEmulator
     {
         public IChargeBox ChargeBox { get; set; }
 
-        public ChargeBoxScreen(IChargeBox chargeBox)
+        public BillsSelector BillsSelector { get; set; }
+
+        
+        
+        public ChargeBoxScreen(IChargeBox chargeBox = null)
         {
             InitializeComponent();
-            DataContext = chargeBox;
+            
             ChargeBox = chargeBox ?? new ChargeBox();
-
-            var billsSelector = new BillsSelector(chargeBox);
-            MainGrid.Children.Add(billsSelector);
-
-            billsSelector.SetValue(Grid.RowProperty, 1);
+            DataContext = ChargeBox;
+                
+            BillsSelector = new BillsSelector(chargeBox);
+            BillsSelector.SetValue(Grid.RowProperty, 1);
+            MainGrid.Children.Add(BillsSelector);
+            
+           
         }
     }
 }

@@ -43,7 +43,6 @@ namespace CadwiseATMEmulator
             CommandBindings.Add(bind);
 
             AtmVM.CurrentContentVM = new MainPage();
-
             DebugListBox.ItemsSource = AtmVM.AtmTanks;
         }
 
