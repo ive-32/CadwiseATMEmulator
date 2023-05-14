@@ -5,10 +5,19 @@
     /// </summary>
     public class Tank
     {
-        public int Denomination { get; set; }
+        public int Denomination { get; }
 
-        public int Volume { get; set; } = 1000;
+        public int Volume { get; }
 
-        public int Count { get; set; } = 0;
+        public int Count { get; set; } 
+
+        public Tank(int denomination, int volume = 1000, int count = 0) 
+        {
+            Denomination = denomination;
+            Volume = volume;
+            Count = count;
+        }
     }
+    
+    
 }

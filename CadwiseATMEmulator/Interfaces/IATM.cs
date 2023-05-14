@@ -9,8 +9,6 @@ namespace CadwiseATMEmulator
 
         IChargeBox ChargeBox { get; set; }
 
-        List<Tank> Tanks { get; set; }
-
         Task<ATMTransactionResult> GetMoney(IChargeBox chargeBox = null);
 
         Task<ATMTransactionResult> PutMoney(IChargeBox chargeBox = null);
@@ -18,5 +16,11 @@ namespace CadwiseATMEmulator
         void SetLimitsForGetMoney();
 
         void SetLimitsForPutMoney();
+
+        bool ATMCanGiveMoney { get; }
+        
+        bool ATMCanTakeMoney { get; }
+        
+        IEnumerable<string> ATMTanksState { get; }
     }
 }

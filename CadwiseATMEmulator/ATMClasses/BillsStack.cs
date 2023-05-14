@@ -5,9 +5,9 @@
     /// </summary>
     public class BillsStack
     {
-        public int MaxValue { get; set; } = 20;
+        public int MaxValue { get; set; } 
 
-        public int Denomination { get; set; } //номинал купюры
+        public int Denomination { get; } //номинал купюры
 
         public int Count { get; set; }
 

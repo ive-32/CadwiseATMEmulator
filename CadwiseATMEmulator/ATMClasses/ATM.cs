@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CadwiseATMEmulator
@@ -11,21 +13,21 @@ namespace CadwiseATMEmulator
     public class ATM : IATM
     {
         public static readonly int[] BanknotesTypes = { 10, 50, 100, 200, 500, 1000, 2000, 5000 };
-
+        private static Mutex tankOperationMutex = new Mutex();
+        
         public delegate void AtmTanksChanged();
         public event AtmTanksChanged OnChange;
 
         public IChargeBox ChargeBox { get; set; } = new ChargeBox();
 
-
-        public List<Tank> Tanks { get; set; } = new List<Tank>();
+        private List<Tank> Tanks { get; set; } = new List<Tank>();
 
         public ATM()
         {
             // для тестирования заполним по 5 банкнот в каждый ящик 
             // емкость ящика сделаем 10 - чтобы проще переполнить
             foreach (var banknoteType in BanknotesTypes)
-                Tanks.Add(new Tank() { Denomination = banknoteType, Volume = 10, Count = 5 });
+                Tanks.Add(new Tank(denomination: banknoteType, volume: 10, count: 5));
         }
 
         public async Task<ATMTransactionResult> PutMoney(IChargeBox chargeBox = null)
@@ -33,33 +35,51 @@ namespace CadwiseATMEmulator
             // вносим банкноты в ящики - игнорим неверные номиналы,
             // TODO здесь же добавляем проверку на подлинность купюр
             // все, что не влезло или не распознано - возвращаем
-
-            // метод будет выполняться асинхронно т.к. будет ждать ответа оборудования
-            // здес эмулируем задержку
-            await Task.Delay(600); 
-
-            // chargeBox ??= ChargeBox will appear only in c#8
-            if (chargeBox == null)
-                chargeBox = ChargeBox;
-
             var totalAmount = 0;
-            foreach (var tank in Tanks)
+
+            tankOperationMutex.WaitOne();
+            try
             {
-                var billsStack = chargeBox.BillsStacks
-                    .FirstOrDefault(m => m.Denomination == tank.Denomination);
+                // метод будет выполняться асинхронно т.к. будет ждать ответа оборудования
+                // здесь эмулируем задержку
+                await Task.Delay(600);
 
-                if (billsStack == null) continue;
-                
-                var allowedCount = Math.Min(tank.Volume - tank.Count, billsStack.Count);
+                // chargeBox ??= ChargeBox will appear only in c#8
+                if (chargeBox == null)
+                    chargeBox = ChargeBox;
 
-                tank.Count += allowedCount;
-                billsStack.Count -= allowedCount;
-                totalAmount += allowedCount * tank.Denomination;
+                foreach (var tank in Tanks)
+                {
+                    var billsStack = chargeBox.BillsStacks
+                        .FirstOrDefault(m => m.Denomination == tank.Denomination);
+
+                    if (billsStack == null) continue;
+                    
+                    var allowedCount = Math.Min(tank.Volume - tank.Count, billsStack.Count);
+
+                    tank.Count += allowedCount;
+                    billsStack.Count -= allowedCount;
+                    totalAmount += allowedCount * tank.Denomination;
+                    
+                    // для эмуляции возврата, через селектор купюр
+                    // ограничиваем значеие ячейки селектора текущим значением, чтобы не было ощущения
+                    // что можно вытащить больше чем там лежит   
+                    billsStack.MaxValue = billsStack.Count;  
+                }
                 
-                // для эмуляции возврата, через селектор купюр
-                // ограничиваем значеие ячейки селектора текущим значением, чтобы не было ощущения
-                // что можно вытащить больше чем там лежит   
-                billsStack.MaxValue = billsStack.Count;  
+            }
+            catch (Exception e)
+            {
+                return new ATMTransactionResult()
+                {
+                    Result = TransactionResultType.Error,
+                    ChargeBox = ChargeBox,
+                    ResultMessage = $"Ошибка оборудования{Environment.NewLine}{e.Message}"
+                };
+            }
+            finally
+            {
+                tankOperationMutex.ReleaseMutex();
             }
 
             OnChange?.Invoke();
@@ -84,38 +104,56 @@ namespace CadwiseATMEmulator
 
         public async Task<ATMTransactionResult> GetMoney(IChargeBox chargeBox = null)
         {
-            // метод будет выполняться асинхронно т.к. будет ждать ответа оборудования
-            // здес эмулируем задержку
-            await Task.Delay(600);
-
-            // chargeBox ??= ChargeBox will appear only in c#8
-            if (chargeBox == null) 
-                chargeBox = ChargeBox;
-
             var totalAmount = 0;
-
-            foreach (var billStack in chargeBox.BillsStacks)
+            tankOperationMutex.WaitOne();
+            try
             {
-                var tank = Tanks.FirstOrDefault(t => t.Denomination == billStack.Denomination);
+                // метод будет выполняться асинхронно т.к. будет ждать ответа оборудования
+                // здесь эмулируем задержку
+                if (DateTime.Now.Millisecond < 200) // для реалистичности сгененируем ошибку с вероятностью 20% 
+                    throw new ExternalException($"Hardware error{Environment.NewLine}Эта ошибка сгенерирована искусственно, для отладки");
+                await Task.Delay(600);
+                // chargeBox ??= ChargeBox will appear only in c#8
+                if (chargeBox == null)
+                    chargeBox = ChargeBox;
 
-                if (tank == null) continue;
-
-                if (billStack.Count >= tank.Count)
+                foreach (var billStack in chargeBox.BillsStacks)
                 {
-                    billStack.Count = tank.Count;
-                    tank.Count = 0;
-                }
-                else
-                    tank.Count -= billStack.Count;
+                    var tank = Tanks.FirstOrDefault(t => t.Denomination == billStack.Denomination);
 
-                totalAmount += billStack.Count * billStack.Denomination;
-                
-                // для эмуляции возврата, через селектор купюр
-                // ограничиваем значеие ячейки селектора текущим значением, чтобы не было ощущения
-                // что можно вытащить больше чем там лежит   
-                billStack.MaxValue = billStack.Count;
+                    if (tank == null) continue;
+
+                    if (billStack.Count >= tank.Count)
+                    {
+                        billStack.Count = tank.Count;
+                        tank.Count = 0;
+                    }
+                    else
+                        tank.Count -= billStack.Count;
+
+                    totalAmount += billStack.Count * billStack.Denomination;
+
+                    // для эмуляции возврата, через селектор купюр
+                    // ограничиваем значеие ячейки селектора текущим значением, чтобы не было ощущения
+                    // что можно вытащить больше чем там лежит   
+                    billStack.MaxValue = billStack.Count;
+                }
+            }
+            catch (Exception e)
+            {
+                return new ATMTransactionResult()
+                {
+                    Result = TransactionResultType.Error,
+                    ChargeBox = ChargeBox,
+                    ResultMessage = $"Ошибка оборудования{Environment.NewLine}{e.Message}"
+                };
+            }
+            finally
+            {
+                tankOperationMutex.ReleaseMutex();
             }
 
+            
             OnChange?.Invoke();
 
             return new ATMTransactionResult()
@@ -156,5 +194,13 @@ namespace CadwiseATMEmulator
                 billsStack.MaxValue = 20;
             }
         }
+        
+        public bool ATMCanGiveMoney => Tanks.Any(t => t.Count > 0);
+        
+        public bool ATMCanTakeMoney => Tanks.Any(t => t.Volume - t.Count > 0);
+        
+        public IEnumerable<string> ATMTanksState
+            => Tanks.Select(tank => $"{tank.Denomination} : {tank.Count} of {tank.Volume}");
+
     }
 }

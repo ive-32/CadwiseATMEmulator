@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Linq;
 using System;
+using System.Collections.Generic;
 
 namespace CadwiseATMEmulator
 {
@@ -63,7 +64,9 @@ namespace CadwiseATMEmulator
                     Environment.NewLine +
                     Environment.NewLine + 
                     _atmEmulator.ChargeBox);
-
+                
+            if (result.Result == TransactionResultType.Error)
+                CurrentContentVM = new SuccessScreen(result.ResultMessage);
                 //для варианта когда возврат отображается в виде селектора купюр
                 /*AtmEmulator.ChargeBox.OperationDescription = result.ResultMessage + " Заберите возврат";
                 AtmEmulator.ChargeBox.OperationName = "Готово";
@@ -81,8 +84,10 @@ namespace CadwiseATMEmulator
             OnPropertyChanged("CurrentContentVM");
 
             var result = await _atmEmulator.GetMoney();
-
-            CurrentContentVM = new SuccessScreen(result.ResultMessage +
+            if (result.Result == TransactionResultType.Error)
+                CurrentContentVM = new SuccessScreen(result.ResultMessage);
+            else
+                CurrentContentVM = new SuccessScreen(result.ResultMessage +
                     Environment.NewLine +
                     Environment.NewLine +
                     _atmEmulator.ChargeBox);
@@ -111,10 +116,10 @@ namespace CadwiseATMEmulator
         }
         
         public void ShowAskMoneyScreen_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-            => e.CanExecute = _atmEmulator.Tanks.Any(t => t.Count > 0);
+            => e.CanExecute = _atmEmulator.ATMCanGiveMoney;
 
         public void ShowPutMoneyScreen_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-            => e.CanExecute = _atmEmulator.Tanks.Any(t => t.Volume - t.Count > 0);
+            => e.CanExecute = _atmEmulator.ATMCanTakeMoney;
 
         public void ShowMainScreen_CanExecute(object sender, CanExecuteRoutedEventArgs e)
             => e.CanExecute = !(CurrentContentVM is MainPage) && !(CurrentContentVM is AwaitingScreen);
@@ -132,8 +137,8 @@ namespace CadwiseATMEmulator
         {
             AtmTanks.Clear();
             AtmTanks.Add("Состояние ящиков банкомата");
-            foreach (var tank in _atmEmulator.Tanks)
-                AtmTanks.Add($"{tank.Denomination} : {tank.Count} of {tank.Volume}");
+            foreach (var line in _atmEmulator.ATMTanksState)
+                AtmTanks.Add(line);
         }
     }
 }
