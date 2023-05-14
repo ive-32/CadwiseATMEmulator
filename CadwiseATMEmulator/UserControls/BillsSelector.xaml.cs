@@ -1,15 +1,12 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel;
 using System.Windows.Controls;
 using System.Linq;
 using System.Windows;
 
 namespace CadwiseATMEmulator
 {
-    public partial class BillsSelector : INotifyPropertyChanged
+    public partial class BillsSelector // : INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-
         public readonly List<BillsCounter> BillsCounters = new List<BillsCounter>();
 
         private BillsSelectorVM BillsSelectorVM { get; set; }

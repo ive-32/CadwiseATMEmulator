@@ -60,9 +60,6 @@
     <Compile Include="ATMClasses\ATMTransactionResult.cs" />
     <Compile Include="ATMClasses\ChargeBox.cs" />
     <Compile Include="ATMClasses\BillsStack.cs" />
-    <Compile Include="Pages\AskMoney.xaml.cs">
-      <DependentUpon>AskMoney.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Pages\AwaitingScreen.xaml.cs">
       <DependentUpon>AwaitingScreen.xaml</DependentUpon>
     </Compile>
@@ -81,7 +78,6 @@
     <Compile Include="ATMClasses\Tank.cs" />
     <Compile Include="ATMClasses\TransactionResultType.cs" />
     <Compile Include="VMClasses\BillsSelectorVM.cs" />
-    <Page Include="Pages\AskMoney.xaml" />
     <Page Include="Pages\AwaitingScreen.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -1,5 +1,4 @@
-﻿using System.Runtime.Serialization.Formatters.Binary;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Input;
 
 namespace CadwiseATMEmulator

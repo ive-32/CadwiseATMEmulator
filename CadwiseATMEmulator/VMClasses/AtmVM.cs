@@ -4,7 +4,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Linq;
 using System;
-using System.Collections.Generic;
 
 namespace CadwiseATMEmulator
 {
@@ -101,7 +100,6 @@ namespace CadwiseATMEmulator
             CommandManager.InvalidateRequerySuggested();
             OnPropertyChanged("CurrentContentVM");
         }
-
 
         public void ShowMainScreen_Executed(object sender, ExecutedRoutedEventArgs e)
         {
