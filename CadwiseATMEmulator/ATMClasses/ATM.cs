@@ -13,8 +13,7 @@ namespace CadwiseATMEmulator
     public class ATM : IATM
     {
         public static readonly int[] BanknotesTypes = { 10, 50, 100, 200, 500, 1000, 2000, 5000 };
-        private static Mutex tankOperationMutex = new Mutex();
-        
+        private static readonly SemaphoreSlim TankOperationSemaphore = new SemaphoreSlim(1, 1);
         public delegate void AtmTanksChanged();
         public event AtmTanksChanged OnChange;
 
@@ -22,12 +21,12 @@ namespace CadwiseATMEmulator
 
         private List<Tank> Tanks { get; set; } = new List<Tank>();
 
-        public ATM()
+        public ATM(int count = 5, int volume = 10)
         {
             // для тестирования заполним по 5 банкнот в каждый ящик 
             // емкость ящика сделаем 10 - чтобы проще переполнить
             foreach (var banknoteType in BanknotesTypes)
-                Tanks.Add(new Tank(denomination: banknoteType, volume: 10, count: 5));
+                Tanks.Add(new Tank(denomination: banknoteType, volume: volume, count: count));
         }
 
         public async Task<ATMTransactionResult> PutMoney(IChargeBox chargeBox = null)
@@ -37,7 +36,14 @@ namespace CadwiseATMEmulator
             // все, что не влезло или не распознано - возвращаем
             var totalAmount = 0;
 
-            tankOperationMutex.WaitOne();
+            var isSemaphoreAvailable = await TankOperationSemaphore.WaitAsync(1000);
+            if (!isSemaphoreAvailable)
+                return new ATMTransactionResult()
+                {
+                    Result = TransactionResultType.Error,
+                    ChargeBox = ChargeBox,
+                    ResultMessage = $"Оборудование недоступно"
+                };
             try
             {
                 // метод будет выполняться асинхронно т.к. будет ждать ответа оборудования
@@ -79,7 +85,7 @@ namespace CadwiseATMEmulator
             }
             finally
             {
-                tankOperationMutex.ReleaseMutex();
+                TankOperationSemaphore.Release();
             }
 
             OnChange?.Invoke();
@@ -105,7 +111,14 @@ namespace CadwiseATMEmulator
         public async Task<ATMTransactionResult> GetMoney(IChargeBox chargeBox = null)
         {
             var totalAmount = 0;
-            tankOperationMutex.WaitOne();
+            var isSemaphoreAvailable = await TankOperationSemaphore.WaitAsync(1000);
+            if (!isSemaphoreAvailable)
+                return new ATMTransactionResult()
+                {
+                    Result = TransactionResultType.Error,
+                    ChargeBox = ChargeBox,
+                    ResultMessage = $"Оборудование недоступно"
+                };
             try
             {
                 // метод будет выполняться асинхронно т.к. будет ждать ответа оборудования
@@ -150,7 +163,7 @@ namespace CadwiseATMEmulator
             }
             finally
             {
-                tankOperationMutex.ReleaseMutex();
+                TankOperationSemaphore.Release();
             }
 
             
@@ -202,5 +215,7 @@ namespace CadwiseATMEmulator
         public IEnumerable<string> ATMTanksState
             => Tanks.Select(tank => $"{tank.Denomination} : {tank.Count} of {tank.Volume}");
 
+        public IEnumerable<Tank> ATMTanks
+            => Tanks;
     }
 }
